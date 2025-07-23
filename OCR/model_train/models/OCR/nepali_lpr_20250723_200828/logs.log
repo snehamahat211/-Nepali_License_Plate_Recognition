@@ -1,0 +1,43 @@
+2025-07-23 20:08:36,849 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:08:36,900 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:09:04,392 - root - INFO - Epoch 0; loss: 54.20518112182617; CER: 0.9885761737823486; WER: 1.0; char_f1: 0.5334295630455017; val_loss: 30.86484718322754; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:09:15,161 - root - INFO - Epoch 1; loss: 24.826860427856445; CER: 0.9864118099212646; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 23.900285720825195; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:09:24,746 - root - INFO - Epoch 2; loss: 23.55872344970703; CER: 0.9841271638870239; WER: 1.0; char_f1: 0.5578402876853943; val_loss: 22.998558044433594; val_CER: 0.9856321811676025; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:09:33,868 - root - INFO - Epoch 3; loss: 22.904388427734375; CER: 0.9841271638870239; WER: 1.0; char_f1: 0.5551947951316833; val_loss: 22.763635635375977; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:09:42,746 - root - INFO - Epoch 4; loss: 22.613645553588867; CER: 0.9841270446777344; WER: 1.0; char_f1: 0.555435299873352; val_loss: 22.051071166992188; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5646551847457886
+2025-07-23 20:09:52,273 - root - INFO - Epoch 5; loss: 22.3011474609375; CER: 0.9841270446777344; WER: 1.0; char_f1: 0.5550745725631714; val_loss: 21.443967819213867; val_CER: 0.985632061958313; val_WER: 1.0; val_char_f1: 0.5665708780288696
+2025-07-23 20:10:01,282 - root - INFO - Epoch 6; loss: 22.09329605102539; CER: 0.9841271042823792; WER: 1.0; char_f1: 0.5530303120613098; val_loss: 21.229230880737305; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5670498013496399
+2025-07-23 20:10:09,976 - root - INFO - Epoch 7; loss: 21.935123443603516; CER: 0.9841270446777344; WER: 1.0; char_f1: 0.5523087978363037; val_loss: 20.928546905517578; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5627394914627075
+2025-07-23 20:10:18,761 - root - INFO - Epoch 8; loss: 21.787370681762695; CER: 0.9841271638870239; WER: 1.0; char_f1: 0.5512265563011169; val_loss: 20.78864288330078; val_CER: 0.9856321811676025; val_WER: 1.0; val_char_f1: 0.5646551847457886
+2025-07-23 20:10:27,288 - root - INFO - Epoch 9; loss: 21.58169937133789; CER: 0.9841269850730896; WER: 1.0; char_f1: 0.552068293094635; val_loss: 20.663793563842773; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5646551847457886
+2025-07-23 20:10:36,293 - root - INFO - Epoch 10; loss: 21.51714515686035; CER: 0.9841269254684448; WER: 1.0; char_f1: 0.5525493025779724; val_loss: 20.726970672607422; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5632184147834778
+2025-07-23 20:10:44,725 - root - INFO - Epoch 11; loss: 21.419300079345703; CER: 0.9841269850730896; WER: 1.0; char_f1: 0.5532708168029785; val_loss: 20.64248275756836; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5646551847457886
+2025-07-23 20:10:53,010 - root - INFO - Epoch 12; loss: 21.40251350402832; CER: 0.9838865399360657; WER: 1.0; char_f1: 0.552068293094635; val_loss: 20.402631759643555; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5617815852165222
+2025-07-23 20:11:01,827 - root - INFO - Epoch 13; loss: 21.366775512695312; CER: 0.9834056496620178; WER: 1.0; char_f1: 0.5514670610427856; val_loss: 20.391725540161133; val_CER: 0.985632061958313; val_WER: 1.0; val_char_f1: 0.5627394914627075
+2025-07-23 20:11:10,974 - root - INFO - Epoch 14; loss: 21.282794952392578; CER: 0.9801587462425232; WER: 1.0; char_f1: 0.5509860515594482; val_loss: 20.349285125732422; val_CER: 0.9856321215629578; val_WER: 1.0; val_char_f1: 0.5617815852165222
+2025-07-23 20:11:20,203 - root - INFO - Epoch 15; loss: 21.257577896118164; CER: 0.9808802604675293; WER: 1.0; char_f1: 0.5521885752677917; val_loss: 20.366405487060547; val_CER: 0.985632061958313; val_WER: 1.0; val_char_f1: 0.561302661895752
+2025-07-23 20:11:23,159 - tf2onnx.tfonnx - INFO - Using tensorflow=2.10.0, onnx=1.12.0, tf2onnx=1.14.0/8f8d49
+2025-07-23 20:11:23,159 - tf2onnx.tfonnx - INFO - Using opset <onnx, 15>
+2025-07-23 20:11:23,325 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,330 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,331 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,333 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,740 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,747 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,754 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,757 - tf2onnx.tf_utils - INFO - Computed 0 values for constant folding
+2025-07-23 20:11:23,856 - tf2onnx.tf_utils - INFO - Computed 2 values for constant folding
+2025-07-23 20:11:23,985 - tf2onnx.tfonnx - INFO - folding node using tf type=StridedSlice, name=model/bidirectional/forward_lstm/PartitionedCall/strided_slice
+2025-07-23 20:11:23,986 - tf2onnx.tfonnx - INFO - folding node using tf type=StridedSlice, name=model/bidirectional/backward_lstm/PartitionedCall/strided_slice
+2025-07-23 20:11:24,228 - tf2onnx.optimizer - INFO - Optimizing ONNX model
+2025-07-23 20:11:24,970 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/einsum/Einsum' by its decomposed version, name of the last node 'Identity__722'.
+2025-07-23 20:11:25,263 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/attention_output/einsum/Einsum' by its decomposed version, name of the last node 'Identity__763'.
+2025-07-23 20:11:25,546 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/query/einsum/Einsum' by its decomposed version, name of the last node 'Identity__802'.
+2025-07-23 20:11:25,553 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/value/einsum/Einsum' by its decomposed version, name of the last node 'Identity__841'.
+2025-07-23 20:11:25,795 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/einsum_1/Einsum' by its decomposed version, name of the last node 'Identity__900'.
+2025-07-23 20:11:25,799 - tf2onnx.optimizer.EinsumOptimizer - INFO - replacing einsum node 'model/multi_head_attention/key/einsum/Einsum' by its decomposed version, name of the last node 'Identity__939'.
+2025-07-23 20:11:26,677 - tf2onnx.optimizer - INFO - After optimization: BatchNormalization -24 (24->0), Cast -20 (28->8), Concat +1 (20->21), Const -193 (302->109), Einsum -6 (6->0), Expand -6 (8->2), Gather +19 (4->23), Gemm +4 (0->4), GlobalAveragePool +4 (0->4), Identity -2 (2->0), MatMul +2 (10->12), Max +2 (0->2), ReduceMean -4 (4->0), ReduceProd +2 (4->6), Reshape +6 (13->19), Shape +7 (7->14), Slice -3 (9->6), Squeeze +5 (9->14), Transpose -86 (102->16), Unsqueeze -23 (39->16)

@@ -11,7 +11,6 @@ matplotlib.rcParams['font.family'] = 'Lohit Devanagari'
 
 
 def clean_labels(data_path):
-    """Remove spaces from all labels"""
     labels_dir = os.path.join(data_path, "labels")
     for filename in os.listdir(labels_dir):
         if filename.endswith(".txt"):
@@ -23,13 +22,11 @@ def clean_labels(data_path):
                 f.truncate()
 
 def standardize_label(label):
-    """Convert Arabic numerals to Devanagari"""
     num_map = {'0':'०', '1':'१', '2':'२', '3':'३', '4':'४',
                '5':'५', '6':'६', '7':'७', '8':'८', '9':'९'}
     return ''.join([num_map.get(c, c) for c in label])
 
 def get_augmenter():
-    """Nepali-specific augmentations"""
     return Compose([
         RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2),
         GaussianBlur(blur_limit=(1,3)),
@@ -37,7 +34,6 @@ def get_augmenter():
     ])
 
 def validate_dataset(dataset, num_samples=3):
-    """Visual check of samples"""
     for img_path, label in dataset[:num_samples]:
         img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
         plt.imshow(img)

@@ -14,10 +14,10 @@ def train_model(input_dimen, output_dimen, *, dropout=0.25):
     x2 = residual_block(x1, 32, strides=(2,1), dropout=dropout)
    
     x3 = residual_block(x2, 64, strides=(1, 1), dropout=dropout)
-    x4 = residual_block(x3, 64, strides=(2,1), dropout=dropout)
+    x4 = residual_block(x3, 64, strides=(2,2), dropout=dropout)
    
     x5 = residual_block(x4, 128, strides=(1, 1), dropout=dropout)
-    x6 = residual_block(x5, 128, strides=(2,1), dropout=dropout)
+    x6 = residual_block(x5, 128, strides=(2,2), dropout=dropout)
   
     x7 = residual_block(x6, 256, strides=(1, 1), dropout=dropout)
     x8 = residual_block(x7, 256, strides=(2,1), dropout=dropout)
@@ -26,16 +26,16 @@ def train_model(input_dimen, output_dimen, *, dropout=0.25):
     assert h_final == 2
 
     squeezed = layers.Reshape((w_final, c_final * h_final))(x8)
+   
+    blstm1 = layers.Bidirectional(layers.LSTM(512, return_sequences=True, dropout=dropout))(squeezed)
+    blstm2 = layers.Bidirectional(layers.LSTM(256, return_sequences=True, dropout=dropout))(blstm1)
 
-    blstm1 = layers.Bidirectional(layers.LSTM(256, return_sequences=True, dropout=dropout))(squeezed)
-    blstm2 = layers.Bidirectional(layers.LSTM(128, return_sequences=True, dropout=dropout))(blstm1)
     
-    # Multi-Head Attention for Character Relationships
     attention = layers.MultiHeadAttention(num_heads=4, key_dim=64)(blstm2, blstm2)
     merged = layers.Concatenate()([blstm2, attention])
 
     dense = layers.Dense(128, activation='relu')(merged)
-    output = layers.Dense(output_dimen + 1, activation='softmax', name="output")(dense)
+    output = layers.Dense(output_dimen + 1, name="output")(dense)
    
     model = Model(inputs=inputs, outputs=output)
     return model

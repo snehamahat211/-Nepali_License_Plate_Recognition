@@ -1,0 +1,8 @@
+2025-07-23 19:59:44,441 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 19:59:44,475 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 19:59:55,603 - tensorflow - WARNING - Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0848s vs `on_train_batch_end` time: 0.0886s). Check your callbacks.
+2025-07-23 20:00:11,051 - root - INFO - Epoch 0; loss: 51.490142822265625; CER: 0.9924241900444031; WER: 1.0; char_f1: 0.5434103012084961; val_loss: 28.94047737121582; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217

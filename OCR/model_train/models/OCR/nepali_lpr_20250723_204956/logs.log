@@ -1,0 +1,20 @@
+2025-07-23 20:50:06,976 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:50:07,166 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:50:54,046 - root - INFO - Epoch 0; loss: 144.11740112304688; CER: 0.9993987679481506; WER: 1.0; char_f1: 0.552068293094635; val_loss: 140.93313598632812; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:51:20,417 - root - INFO - Epoch 1; loss: 140.77764892578125; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.92893981933594; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:51:45,416 - root - INFO - Epoch 2; loss: 140.77276611328125; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.92337036132812; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:52:14,565 - root - INFO - Epoch 3; loss: 140.7665252685547; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.9164581298828; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:52:44,458 - root - INFO - Epoch 4; loss: 140.75909423828125; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.90841674804688; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:53:10,377 - root - INFO - Epoch 5; loss: 140.7505340576172; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.8992919921875; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:53:36,602 - root - INFO - Epoch 6; loss: 140.74072265625; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.88905334472656; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:54:02,939 - root - INFO - Epoch 7; loss: 140.7300567626953; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.87782287597656; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:54:30,317 - root - INFO - Epoch 8; loss: 140.71836853027344; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.8656005859375; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:54:57,728 - root - INFO - Epoch 9; loss: 140.7056884765625; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.85255432128906; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:55:25,245 - root - INFO - Epoch 10; loss: 140.69224548339844; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.83868408203125; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:55:53,245 - root - INFO - Epoch 11; loss: 140.67799377441406; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.82411193847656; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:56:20,949 - root - INFO - Epoch 12; loss: 140.66307067871094; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.80894470214844; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:56:52,038 - root - INFO - Epoch 13; loss: 140.64761352539062; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.79319763183594; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217

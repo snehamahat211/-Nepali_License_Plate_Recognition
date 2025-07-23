@@ -1,0 +1,10 @@
+2025-07-23 20:57:38,262 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:57:38,327 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:58:23,309 - root - INFO - Epoch 0; loss: 143.93861389160156; CER: 0.9995189905166626; WER: 1.0; char_f1: 0.551948070526123; val_loss: 140.9331512451172; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:58:54,741 - root - INFO - Epoch 1; loss: 140.77767944335938; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.928955078125; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:59:25,485 - root - INFO - Epoch 2; loss: 140.77285766601562; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.9233856201172; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:59:55,317 - root - INFO - Epoch 3; loss: 140.76663208007812; CER: 1.0; WER: 1.0; char_f1: 0.5594035387039185; val_loss: 140.9165802001953; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217

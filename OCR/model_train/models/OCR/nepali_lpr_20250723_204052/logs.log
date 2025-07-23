@@ -1,0 +1,7 @@
+2025-07-23 20:41:06,792 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:41:06,830 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:41:47,221 - root - INFO - Epoch 0; loss: 34.70635223388672; CER: 0.9980762004852295; WER: 1.0; char_f1: 0.5466570258140564; val_loss: 22.7509822845459; val_CER: 0.9985631704330444; val_WER: 1.0; val_char_f1: 0.571360170841217

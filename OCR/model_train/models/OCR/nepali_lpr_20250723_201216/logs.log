@@ -1,0 +1,14 @@
+2025-07-23 20:12:25,323 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1465: alias_inplace_add (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_add, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:12:25,358 - tensorflow - WARNING - From /home/lamin/anaconda3/envs/new-gpu/lib/python3.10/site-packages/tensorflow/python/ops/ctc_ops.py:1448: alias_inplace_update (from tensorflow.python.ops.inplace_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Prefer tf.tensor_scatter_nd_update, which offers the same functionality with well-defined read-write semantics.
+2025-07-23 20:13:04,205 - root - INFO - Epoch 0; loss: 33.28163146972656; CER: 0.9892987012863159; WER: 1.0; char_f1: 0.5508658289909363; val_loss: 23.652263641357422; val_CER: 1.0; val_WER: 1.0; val_char_f1: 0.571360170841217
+2025-07-23 20:13:27,963 - root - INFO - Epoch 1; loss: 22.957735061645508; CER: 0.9832859635353088; WER: 1.0; char_f1: 0.5679413080215454; val_loss: 21.565452575683594; val_CER: 0.9856320023536682; val_WER: 1.0; val_char_f1: 0.5809386968612671
+2025-07-23 20:13:50,692 - root - INFO - Epoch 2; loss: 22.37879180908203; CER: 0.984127938747406; WER: 1.0; char_f1: 0.5762385725975037; val_loss: 21.050783157348633; val_CER: 0.9856318831443787; val_WER: 1.0; val_char_f1: 0.5914750695228577
+2025-07-23 20:14:13,148 - root - INFO - Epoch 3; loss: 21.95490074157715; CER: 0.9841278195381165; WER: 1.0; char_f1: 0.5764790773391724; val_loss: 20.7877197265625; val_CER: 0.9856318831443787; val_WER: 1.0; val_char_f1: 0.5938697457313538
+2025-07-23 20:14:36,899 - root - INFO - Epoch 4; loss: 21.68289566040039; CER: 0.984127938747406; WER: 1.0; char_f1: 0.5785233378410339; val_loss: 20.519145965576172; val_CER: 0.9856319427490234; val_WER: 1.0; val_char_f1: 0.594348669052124
+2025-07-23 20:14:59,208 - root - INFO - Epoch 5; loss: 21.481348037719727; CER: 0.9836471080780029; WER: 1.0; char_f1: 0.5845358371734619; val_loss: 20.490863800048828; val_CER: 0.9856319427490234; val_WER: 1.0; val_char_f1: 0.5933908224105835
+2025-07-23 20:15:22,949 - root - INFO - Epoch 6; loss: 21.348575592041016; CER: 0.9777544736862183; WER: 1.0; char_f1: 0.5865800976753235; val_loss: 20.12825584411621; val_CER: 0.9856319427490234; val_WER: 1.0; val_char_f1: 0.6005747318267822
+2025-07-23 20:15:44,450 - root - INFO - Epoch 7; loss: 21.24279022216797; CER: 0.974748432636261; WER: 1.0; char_f1: 0.5846560597419739; val_loss: 20.331932067871094; val_CER: 0.9856318831443787; val_WER: 1.0; val_char_f1: 0.5977011322975159

@@ -1,6 +1,7 @@
 import sys
 import os
 import numpy  as np
+import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import cv2
@@ -35,6 +36,7 @@ from mltu.tensorflow.callbacks import Model2onnx, TrainLogger
 
 from configs.config import ModelConfiguration
 
+
 import matplotlib
 matplotlib.rcParams['font.family'] = 'Lohit Devanagari'
 
@@ -43,6 +45,46 @@ class DebugCallback(tf.keras.callbacks.Callback):
         print(f"Epoch {epoch} | Loss: {logs.get('loss')} | Val Loss: {logs.get('val_loss')}")
         if np.isnan(logs.get('loss')):
             print("Warning: Loss is NaN!")
+
+class SamplePredictionCallback(tf.keras.callbacks.Callback):
+    def __init__(self, val_data_provider, vocab):
+        super().__init__()
+        self.val_data_provider = val_data_provider
+        self.vocab = vocab
+
+    def on_epoch_end(self, epoch, logs=None):
+        sample_batch = next(iter(self.val_data_provider))
+        sample_images, sample_labels = sample_batch[0], sample_batch[1]
+        predictions = self.model.predict(sample_images) 
+
+        decoded = []
+        blank_index = len(self.vocab)
+        for pred in predictions:
+            decoded.append(ctc_beam_search_decode(pred, self.vocab))
+
+
+        true_texts = labels_to_texts(sample_labels, self.vocab)
+
+        print(f"\nEpoch {epoch+1} Sample Predictions:")
+        for t, p in zip(true_texts[:3], decoded[:3]):
+            print(f" → True: {t}\n → Pred: {p}\n")
+
+    
+def plot_sample(image, true_text, pred_text):
+    plt.imshow(image.squeeze(), cmap='gray')
+    plt.title(f"True: {true_text}\nPredicted: {pred_text}")
+    plt.axis('off')
+    plt.show()
+
+
+
+
+class NaNStoppingCallback(tf.keras.callbacks.Callback):
+        def on_batch_end(self, batch, logs=None):
+            loss = logs.get('loss')
+            if loss is not None and np.isnan(loss):
+                print(f"NaN detected in loss at batch {batch}, stopping training.")
+                self.model.stop_training = True
 
 # Clean labels 
 def clean_labels(data_path):
@@ -81,6 +123,7 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
 
         with open(label_path, "r", encoding="utf-8") as lf:
             label = lf.read().strip()
+            label = standardize_label(label)  # standardize digits here
         
         if not label:
             print(f"Empty label in {label_path}")
@@ -92,18 +135,47 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
 
     return dataset, sorted(vocab), max_len
 
+
 def labels_to_texts(labels_batch, vocab):
     texts = []
     for label_seq in labels_batch:
-        text = ''.join([vocab[idx] if idx < len(vocab) else '' for idx in label_seq])
+        text = ''.join([vocab[idx] for idx in label_seq if idx < len(vocab)])
         texts.append(text)
     return texts
 
 def check_for_nans_and_infs(dataset):
     for img_path, _ in dataset:
-        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE).astype("float32") / 255.
+        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        
+        if img is None:
+            print("Image not loaded correctly:", img_path)
+            continue  
+        
+        img = img.astype("float32") / 255.0
+        
         if np.isnan(img).any() or np.isinf(img).any():
             raise ValueError(f"NaN/Inf found in {img_path}")
+
+def ctc_beam_search_decode(predictions, vocab, beam_width=10):
+    predictions = predictions[np.newaxis, ...]  # Add batch dim
+    
+    print("Predictions shape:", predictions.shape)  # Expect (1, time_steps, num_classes)
+    input_length = np.array([predictions.shape[1]])
+    print("Input length:", input_length)
+
+    decoded, _ = tf.keras.backend.ctc_decode(
+        predictions,
+        input_length=input_length,
+        greedy=True,
+        beam_width=beam_width,
+        top_paths=1
+    )
+    decoded_indices = decoded[0].numpy()[0]
+    print("Decoded indices:", decoded_indices)
+
+    decoded_text = ''.join([vocab[idx] for idx in decoded_indices if idx != -1])
+    return decoded_text
+
 
 
 
@@ -145,7 +217,7 @@ def main():
         skip_validation=True,
         shuffle=True,
         batch_size=config.batch_size,
-        data_preprocessors=[GrayscaleImageReader()],
+        data_preprocessors=[GrayscaleImageReader(visualize=True)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
@@ -158,7 +230,7 @@ def main():
         dataset=val_dataset,
         skip_validation=True,
         batch_size=config.batch_size,
-        data_preprocessors=[GrayscaleImageReader()],
+        data_preprocessors=[GrayscaleImageReader(visualize=True)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
@@ -211,27 +283,34 @@ def main():
     log_dir=f"{config.model_path}/logs"
 )
 
-
     # Define callbacks
     callbacks = [
     EarlyStopping(monitor="val_char_f1", patience=15, mode="max"), 
     ModelCheckpoint(f"{config.model_path}/model.h5", monitor="val_char_f1", save_best_only=True, mode="max"), conf_matrix_cb,  
     TrainLogger(config.model_path),
-    TensorBoard(log_dir=f"{config.model_path}/logs", update_freq='epoch', write_graph=True),
-    ReduceLROnPlateau(monitor="val_CER", factor=0.9, min_delta=1e-10, patience=5, verbose=1, mode="auto"), 
-    Model2onnx(f"{config.model_path}/model.h5")
+    TensorBoard(log_dir="/home/lamin/-Nepali_License_Plate_Recognition/OCR/model_train/logs", update_freq='epoch', write_graph=True), 
+    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1, min_lr=1e-6),
+    Model2onnx(f"{config.model_path}/model.h5"),
+    NaNStoppingCallback(),
+    SamplePredictionCallback(val_data_provider, config.vocab)
 ]
 
     
-    # In main(), after dataset loading:
-    print("\nSample Validation:")
-    for i in range(3):
-        img = cv2.imread(train_dataset[i][0])
-        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-        plt.title(f"Label: {train_dataset[i][1]}")
-        plt.show()
+    #print("\nSample Validation:")
+    #for i in range(3):
+        #img = cv2.imread(train_dataset[i][0])
+        #plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        #plt.title(f"Label: {train_dataset[i][1]}")
+        #plt.show()
 
     # Train the model
+
+    for i, (images, labels) in enumerate(train_data_provider):
+        print("Sample encoded labels:", labels[0])
+        print("Decoded:", labels_to_texts([labels[0]], config.vocab))
+        break
+
+
     print("\nStarting training...")
     try:
         model.fit(
@@ -254,6 +333,8 @@ def main():
 
     print("\nTraining completed successfully!")
 
+    plot_sample()
+
     demo_random_val_sample(model, val_dataset, config.vocab)
 
 
@@ -262,8 +343,8 @@ def main():
     images, labels = batch
 
     predictions = model.predict(images)
-    pred_texts = decode_predictions(predictions, config.vocab)
-    pred_probs = tf.nn.softmax(predictions, axis=-1)  # Get softmax probabilities
+    pred_texts = [ctc_beam_search_decode(pred, config.vocab) for pred in predictions]
+    pred_probs = tf.nn.softmax(predictions, axis=-1) 
     print(pred_probs)
 
     true_texts = labels_to_texts(labels, config.vocab)
