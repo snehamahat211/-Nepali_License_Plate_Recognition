@@ -8,14 +8,17 @@ import seaborn as sns
 import cv2
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+ 
+ #cpu
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+#tf.config.set_visible_devices([], 'GPU')
 
-
-# GPU Configuration
+#GPU Configuration
 print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
 
 try:
     [tf.config.experimental.set_memory_growth(gpu, True)
-     for gpu in tf.config.experimental.list_physical_devices("GPU")]
+    for gpu in tf.config.experimental.list_physical_devices("GPU")]
 except:
     pass
 
@@ -286,7 +289,7 @@ def main():
     )
 
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-    initial_learning_rate=1e-4,
+    initial_learning_rate=1e-3,
     decay_steps=1000,
     decay_rate=0.95
 )
@@ -458,7 +461,7 @@ def main():
 
         # After training completes in main()
     print("\nStarting prediction on your own image...")
-    your_image_path = "../Datasets/images.jpeg"  # change this path to your actual image path
+    your_image_path = "../Datasets/image.png"  # change this path to your actual image path
     predict_single_image(model, your_image_path, config.vocab)
 
 

@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from residual_block import residual_block
 
-def train_model(input_dimen, vocab_size, *, dropout=0.1):
+def train_model(input_dimen, vocab_size, *, dropout=0.15):
     h, w, _ = input_dimen
     inputs = layers.Input(shape=input_dimen, name="input")        
 
