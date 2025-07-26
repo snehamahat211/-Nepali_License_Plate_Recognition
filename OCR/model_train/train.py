@@ -138,10 +138,12 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
 
 def labels_to_texts(labels_batch, vocab):
     texts = []
+    pad_token = len(vocab)
     for label_seq in labels_batch:
-        text = ''.join([vocab[idx] for idx in label_seq if idx < len(vocab)])
+        text = ''.join([vocab[idx] for idx in label_seq if idx != pad_token])
         texts.append(text)
     return texts
+
 
 def check_for_nans_and_infs(dataset):
     for img_path, _ in dataset:
@@ -157,23 +159,30 @@ def check_for_nans_and_infs(dataset):
             raise ValueError(f"NaN/Inf found in {img_path}")
 
 def ctc_beam_search_decode(predictions, vocab, beam_width=10):
-    predictions = predictions[np.newaxis, ...]  # Add batch dim
-    
-    print("Predictions shape:", predictions.shape)  # Expect (1, time_steps, num_classes)
+    import tensorflow as tf
+    import numpy as np
+
+    if predictions.ndim == 2:
+        predictions = predictions[np.newaxis, ...]
+
+    if np.max(predictions) > 1.0:
+        predictions = tf.nn.softmax(predictions, axis=-1).numpy()
+
     input_length = np.array([predictions.shape[1]])
-    print("Input length:", input_length)
 
     decoded, _ = tf.keras.backend.ctc_decode(
         predictions,
         input_length=input_length,
-        greedy=True,
+        greedy=False,
         beam_width=beam_width,
         top_paths=1
     )
-    decoded_indices = decoded[0].numpy()[0]
-    print("Decoded indices:", decoded_indices)
 
-    decoded_text = ''.join([vocab[idx] for idx in decoded_indices if idx != -1])
+    decoded_indices = decoded[0].numpy()[0]
+
+    # Default blank index is the last class
+    blank_index = len(vocab)
+    decoded_text = ''.join([vocab[idx] for idx in decoded_indices if idx != -1 and idx != blank_index])
     return decoded_text
 
 
@@ -193,17 +202,14 @@ def main():
     print("Loading validation data...")
     val_dataset, val_vocab, max_val_len = read_dataset(val_annotation_path, data_path)
     
-
-    characters = list("".join(train_vocab)) 
-    char_to_num = {char: idx for idx, char in enumerate(characters)}
+    config.vocab = sorted(train_vocab)
+    char_to_num = {c: i for i, c in enumerate(config.vocab)}
 
     def encode_label(label):
         return [char_to_num[c] for c in label]
-    
+
     print(encode_label('ग१ख४५६२'))
 
-    config.vocab = "".join(train_vocab) + "#"
-    char_to_num = {c: i for i, c in enumerate(config.vocab)}
     config.max_text_length = max(max_train_len, max_val_len)
     config.save()
 
@@ -333,8 +339,6 @@ def main():
 
     print("\nTraining completed successfully!")
 
-    plot_sample()
-
     demo_random_val_sample(model, val_dataset, config.vocab)
 
 
@@ -346,10 +350,28 @@ def main():
     pred_texts = [ctc_beam_search_decode(pred, config.vocab) for pred in predictions]
     pred_probs = tf.nn.softmax(predictions, axis=-1) 
     print(pred_probs)
+    
+
+    # Debug output tokens
+    pred_classes = np.argmax(predictions[0], axis=-1)
+    blank_index = len(config.vocab)
+    blank_count = np.sum(pred_classes == blank_index)
+    print(f"Blank predictions: {blank_count}/{len(pred_classes)}")
+
+    print("Predicted class indices:", pred_classes)
 
     true_texts = labels_to_texts(labels, config.vocab)
 
     visualize_predictions(images, true_texts, pred_texts, num=5)
+    plot_sample(images[0], true_texts[0], pred_texts[0])
+
+    softmax_probs = tf.nn.softmax(predictions[0], axis=-1).numpy()
+    plt.figure(figsize=(15, 5))
+    sns.heatmap(softmax_probs, cmap='viridis')
+    plt.title("Softmax Heatmap")
+    plt.xlabel("Classes")
+    plt.ylabel("Timesteps")
+    plt.show()
 
     for path, _ in val_dataset:
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
