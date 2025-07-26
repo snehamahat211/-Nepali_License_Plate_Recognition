@@ -23,10 +23,13 @@ def residual_block(x: layers.Layer, filters: int, activation='leaky_relu', strid
         x = layers.Add()([x, shortcut])
         x = act(x)
 
+
     if filters >= 128:
         se = layers.GlobalAveragePooling2D()(x)
-        se = layers.Dense(filters//8, activation='relu')(se)
+        se = layers.Dense(filters // 8, activation='relu')(se)
         se = layers.Dense(filters, activation='sigmoid')(se)
+        se = layers.Reshape((1, 1, filters))(se)
         x = layers.Multiply()([x, se])
+
 
     return x

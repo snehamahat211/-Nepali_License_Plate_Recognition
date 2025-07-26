@@ -4,6 +4,7 @@ import numpy  as np
 import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import seaborn as sns
 import cv2
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -18,12 +19,17 @@ try:
 except:
     pass
 
+from tensorflow.keras import backend as K
+K.clear_session()
+
+
 from model_train.ctc_loss import CTCloss
 from inferencemodel import demo_random_val_sample
 from model_train.grayscalereader import GrayscaleImageReader
 from model_train.model import train_model
 from metrics.conf_matrix import ConfMatrixCallback
 from metrics.char_prf1 import CharPRF1
+from model_train.inferencemodel import predict_single_image
 from model_train.data_utils import decode_predictions, visualize_predictions
 
 
@@ -31,7 +37,7 @@ from model_train.np_image_resizer import NumpyImageResizer
 from mltu.transformers import LabelIndexer, LabelPadding
 from mltu.tensorflow.dataProvider import DataProvider
 from mltu.tensorflow.metrics import CWERMetric
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, TensorBoard
+from keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from mltu.tensorflow.callbacks import Model2onnx, TrainLogger
 
 from configs.config import ModelConfiguration
@@ -66,9 +72,29 @@ class SamplePredictionCallback(tf.keras.callbacks.Callback):
         true_texts = labels_to_texts(sample_labels, self.vocab)
 
         print(f"\nEpoch {epoch+1} Sample Predictions:")
-        for t, p in zip(true_texts[:3], decoded[:3]):
-            print(f" → True: {t}\n → Pred: {p}\n")
+        n_samples = min(3, len(sample_images))
+        sample_indices = np.random.choice(len(sample_images), n_samples, replace=False)
+        for i in sample_indices:
+            print(f" → True: {true_texts[i]}\n → Pred: {decoded[i]}\n")
 
+class BlankCollapseDetector(tf.keras.callbacks.Callback):
+    def __init__(self, val_data_provider, vocab):
+        super().__init__()
+        self.val_data_provider = val_data_provider
+        self.vocab = vocab
+        self.blank_index = len(vocab)
+
+    def on_epoch_end(self, epoch, logs=None):
+        sample_batch = next(iter(self.val_data_provider))
+        images, _ = sample_batch
+        predictions = self.model.predict(images)
+
+        pred_classes = np.argmax(predictions, axis=-1)  # shape: (batch_size, time_steps)
+        blank_count = np.sum(pred_classes == self.blank_index)
+        total_preds = np.prod(pred_classes.shape)
+        
+        if blank_count / total_preds > 0.8:
+            print(f"Epoch {epoch+1}: Warning! Over 80% blanks in batch predictions — model may be collapsing.")
     
 def plot_sample(image, true_text, pred_text):
     plt.imshow(image.squeeze(), cmap='gray')
@@ -123,7 +149,8 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
 
         with open(label_path, "r", encoding="utf-8") as lf:
             label = lf.read().strip()
-            label = standardize_label(label)  # standardize digits here
+            label = standardize_label(label) 
+            print(f"Label after standardizing: {label}") 
         
         if not label:
             print(f"Empty label in {label_path}")
@@ -136,11 +163,13 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
     return dataset, sorted(vocab), max_len
 
 
-def labels_to_texts(labels_batch, vocab):
+def labels_to_texts(labels_batch, vocab, label_padding_token=None):
+    if label_padding_token is None:
+        label_padding_token = len(vocab)
+
     texts = []
-    pad_token = len(vocab)
     for label_seq in labels_batch:
-        text = ''.join([vocab[idx] for idx in label_seq if idx != pad_token])
+        text = ''.join([vocab[idx] for idx in label_seq if idx != label_padding_token])
         texts.append(text)
     return texts
 
@@ -159,8 +188,6 @@ def check_for_nans_and_infs(dataset):
             raise ValueError(f"NaN/Inf found in {img_path}")
 
 def ctc_beam_search_decode(predictions, vocab, beam_width=10):
-    import tensorflow as tf
-    import numpy as np
 
     if predictions.ndim == 2:
         predictions = predictions[np.newaxis, ...]
@@ -223,7 +250,7 @@ def main():
         skip_validation=True,
         shuffle=True,
         batch_size=config.batch_size,
-        data_preprocessors=[GrayscaleImageReader(visualize=True)],
+        data_preprocessors=[GrayscaleImageReader(visualize=False)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
@@ -236,7 +263,7 @@ def main():
         dataset=val_dataset,
         skip_validation=True,
         batch_size=config.batch_size,
-        data_preprocessors=[GrayscaleImageReader(visualize=True)],
+        data_preprocessors=[GrayscaleImageReader(visualize=False)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
@@ -255,12 +282,20 @@ def main():
     # Model Initialization
     model = train_model(
         input_dimen=(config.height, config.width, 1),
-        output_dimen=len(config.vocab)
+        vocab_size=len(config.vocab)
     )
+
+    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+    initial_learning_rate=1e-4,
+    decay_steps=1000,
+    decay_rate=0.95
+)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
+
 
     # Compile model
     model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate=config.learning_rate, clipnorm=1.0),
+        optimizer = optimizer,
         loss=CTCloss(blank_index=len(config.vocab)),
         metrics=[
             CWERMetric(padding_token=-1),
@@ -278,6 +313,8 @@ def main():
     print("Model output shape:", dummy_output.shape) 
     print("Output sequence length (time steps):", dummy_output.shape[1])
 
+    print("Output sequence length:", dummy_output.shape[1])
+    print("Max label length:", config.max_text_length)
 
     # Prepare output directory
     os.makedirs(config.model_path, exist_ok=True)
@@ -292,14 +329,16 @@ def main():
     # Define callbacks
     callbacks = [
     EarlyStopping(monitor="val_char_f1", patience=15, mode="max"), 
-    ModelCheckpoint(f"{config.model_path}/model.h5", monitor="val_char_f1", save_best_only=True, mode="max"), conf_matrix_cb,  
+    ModelCheckpoint(f"{config.model_path}/model.h5", monitor="val_char_f1", save_best_only=True, mode="max"), 
+    conf_matrix_cb,  
     TrainLogger(config.model_path),
     TensorBoard(log_dir="/home/lamin/-Nepali_License_Plate_Recognition/OCR/model_train/logs", update_freq='epoch', write_graph=True), 
-    ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1, min_lr=1e-6),
     Model2onnx(f"{config.model_path}/model.h5"),
     NaNStoppingCallback(),
-    SamplePredictionCallback(val_data_provider, config.vocab)
+    SamplePredictionCallback(val_data_provider, config.vocab),
+    BlankCollapseDetector(val_data_provider, config.vocab),
 ]
+
 
     
     #print("\nSample Validation:")
@@ -318,13 +357,20 @@ def main():
 
 
     print("\nStarting training...")
+
+    steps_per_epoch = len(train_data_provider)
+    validation_steps = len(val_data_provider)
+
     try:
-        model.fit(
-            train_data_provider,
-            validation_data=val_data_provider,
-            epochs=config.train_epochs,
-            callbacks=callbacks
-        )
+        history = model.fit(
+        train_data_provider,
+        validation_data=val_data_provider,
+        epochs=config.train_epochs,
+        steps_per_epoch=steps_per_epoch,
+        validation_steps=validation_steps,
+        callbacks=callbacks
+)
+
     except Exception as e:
         print(f"\nTraining failed: {str(e)}")
         model.save(os.path.join(config.model_path, "interrupted_model.h5"))
@@ -338,6 +384,9 @@ def main():
     val_data_provider.to_csv(os.path.join(config.model_path, "val.csv"))
 
     print("\nTraining completed successfully!")
+
+    print(history.history.keys())
+
 
     demo_random_val_sample(model, val_dataset, config.vocab)
 
@@ -357,12 +406,17 @@ def main():
     blank_index = len(config.vocab)
     blank_count = np.sum(pred_classes == blank_index)
     print(f"Blank predictions: {blank_count}/{len(pred_classes)}")
+    if blank_count / len(pred_classes) > 0.8:
+        print("Warning: Over 80% of predictions are blanks — model may be collapsing.")
+
 
     print("Predicted class indices:", pred_classes)
 
-    true_texts = labels_to_texts(labels, config.vocab)
+    label_padding_token = len(config.vocab)
+    true_texts = labels_to_texts(labels, config.vocab, label_padding_token=label_padding_token)
 
-    visualize_predictions(images, true_texts, pred_texts, num=5)
+
+    visualize_predictions(images, true_texts, pred_texts, num=2)
     plot_sample(images[0], true_texts[0], pred_texts[0])
 
     softmax_probs = tf.nn.softmax(predictions[0], axis=-1).numpy()
@@ -372,6 +426,25 @@ def main():
     plt.xlabel("Classes")
     plt.ylabel("Timesteps")
     plt.show()
+ # 
+    if 'loss' in history.history and 'val_loss' in history.history:
+        plt.plot(history.history['loss'], label='train loss')
+        plt.plot(history.history['val_loss'], label='val loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+        plt.show()
+
+    if 'char_f1' in history.history and 'val_char_f1' in history.history:
+        plt.plot(history.history['char_f1'], label='train char_f1')
+        plt.plot(history.history['val_char_f1'], label='val char_f1')
+        plt.xlabel('Epoch')
+        plt.ylabel('Char F1')
+        plt.legend()
+        plt.show()
+    else:
+        print("Char F1 metrics not found in training history.")
+
 
     for path, _ in val_dataset:
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
@@ -381,6 +454,13 @@ def main():
             print(f"Image with NaNs: {path}")
         elif np.max(img) == 0:
             print(f"Image is completely black: {path}")
+
+
+        # After training completes in main()
+    print("\nStarting prediction on your own image...")
+    your_image_path = "../Datasets/images.jpeg"  # change this path to your actual image path
+    predict_single_image(model, your_image_path, config.vocab)
+
 
 
 if __name__ == "__main__":
