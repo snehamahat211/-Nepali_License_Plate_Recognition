@@ -14,7 +14,7 @@ def get_augmenter():
 class GrayscaleImageReader(ImageReader):
     def __init__(self, visualize=False):
         super().__init__(image_class=np.ndarray)
-        self.augmenter = get_augmenter()
+        self.augmenter = None
         self.visualize = visualize
         self.has_visualized = False  
 
@@ -22,10 +22,11 @@ class GrayscaleImageReader(ImageReader):
         color_img = cv2.imread(image_path)
         if color_img is None:
             raise ValueError(f"Could not read image at {image_path}")
-        
-        augmented = self.augmenter(image=color_img)
-        color_img = augmented['image']
-        
+
+        # Only apply augmentation if self.augmenter is not None
+        if self.augmenter is not None:
+            color_img = self.augmenter(image=color_img)['image']
+
         gray_img = cv2.cvtColor(color_img, cv2.COLOR_BGR2GRAY)
         gray_img = gray_img.astype(np.float32) / 255.0  
         gray_img = np.expand_dims(gray_img, axis=-1)

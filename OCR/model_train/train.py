@@ -168,14 +168,12 @@ def read_dataset(image_list_path, data_path, clean_labels_first=True):
 
 def labels_to_texts(labels_batch, vocab, label_padding_token=None):
     if label_padding_token is None:
-        label_padding_token = len(vocab)
-
+        label_padding_token = -1  # Use -1 as default if that's your padding
     texts = []
     for label_seq in labels_batch:
-        text = ''.join([vocab[idx] for idx in label_seq if idx != label_padding_token])
+        text = ''.join([vocab[idx] for idx in label_seq if idx >= 0 and idx < len(vocab)])
         texts.append(text)
     return texts
-
 
 def check_for_nans_and_infs(dataset):
     for img_path, _ in dataset:
@@ -190,7 +188,7 @@ def check_for_nans_and_infs(dataset):
         if np.isnan(img).any() or np.isinf(img).any():
             raise ValueError(f"NaN/Inf found in {img_path}")
 
-def ctc_beam_search_decode(predictions, vocab, beam_width=10):
+def ctc_beam_search_decode(predictions, vocab, beam_width=1):
 
     if predictions.ndim == 2:
         predictions = predictions[np.newaxis, ...]
@@ -203,7 +201,7 @@ def ctc_beam_search_decode(predictions, vocab, beam_width=10):
     decoded, _ = tf.keras.backend.ctc_decode(
         predictions,
         input_length=input_length,
-        greedy=False,
+        greedy=True,
         beam_width=beam_width,
         top_paths=1
     )
@@ -238,7 +236,7 @@ def main():
     def encode_label(label):
         return [char_to_num[c] for c in label]
 
-    print(encode_label('ग१ख४५६२'))
+    print(encode_label('१२३४५'))
 
     config.max_text_length = max(max_train_len, max_val_len)
     config.save()
@@ -247,30 +245,31 @@ def main():
     check_for_nans_and_infs(val_dataset)
 
 
+
     # Create data provider for model training
     train_data_provider = DataProvider(
         dataset=train_dataset,
         skip_validation=True,
-        shuffle=True,
+        shuffle=False,
         batch_size=config.batch_size,
         data_preprocessors=[GrayscaleImageReader(visualize=False)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
-            LabelPadding(max_word_length=config.max_text_length, padding_value=len(config.vocab))
+            LabelPadding(max_word_length=config.max_text_length, padding_value=-1)
         ]
     )
 
     # Create data provider for model validation
     val_data_provider = DataProvider(
         dataset=val_dataset,
-        skip_validation=True,
+        skip_validation=False,
         batch_size=config.batch_size,
         data_preprocessors=[GrayscaleImageReader(visualize=False)],
         transformers=[
             NumpyImageResizer(config.width, config.height),
             LabelIndexer(config.vocab),
-            LabelPadding(max_word_length=config.max_text_length, padding_value=len(config.vocab))
+            LabelPadding(max_word_length=config.max_text_length, padding_value=-1)
         ]
     )
 
@@ -280,12 +279,18 @@ def main():
         if tf.math.reduce_any(tf.math.is_nan(batch_x)) or tf.math.reduce_any(tf.math.is_inf(batch_x)):
             raise ValueError("NaN or Inf detected in input images.")
 
-
+    for i, (images, labels) in enumerate(train_data_provider):
+        print("Sample label indices:", labels[0])
+        print("All label indices in batch:", labels)
+        print("Unique values in labels:", np.unique(labels))
+        print("Decoded label:", labels_to_texts([labels[0]], config.vocab))
+        break
 
     # Model Initialization
     model = train_model(
         input_dimen=(config.height, config.width, 1),
-        vocab_size=len(config.vocab)
+        vocab_size=len(config.vocab),
+        dropout=0.0
     )
 
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
@@ -316,6 +321,9 @@ def main():
     print("Model output shape:", dummy_output.shape) 
     print("Output sequence length (time steps):", dummy_output.shape[1])
 
+    print("Vocab:", config.vocab)
+    print("Vocab length:", len(config.vocab))
+
     print("Output sequence length:", dummy_output.shape[1])
     print("Max label length:", config.max_text_length)
 
@@ -343,7 +351,45 @@ def main():
 ]
 
 
+    single_train = [train_dataset[0]]
+    single_val = [val_dataset[0]]
+
+    single_train_provider = DataProvider(
+        dataset=single_train,
+        skip_validation=True,
+        shuffle=False,
+        batch_size=1,
+        data_preprocessors=[GrayscaleImageReader(visualize=False)],
+        transformers=[
+            NumpyImageResizer(config.width, config.height),
+            LabelIndexer(config.vocab),
+            LabelPadding(max_word_length=config.max_text_length, padding_value=-1)
+        ]
+    )
+    single_val_provider = DataProvider(
+        dataset=single_val,
+        skip_validation=False,
+        batch_size=1,
+        data_preprocessors=[GrayscaleImageReader(visualize=False)],
+        transformers=[
+            NumpyImageResizer(config.width, config.height),
+            LabelIndexer(config.vocab),
+            LabelPadding(max_word_length=config.max_text_length, padding_value=-1)
+        ]
+    )
+
+    print("\n--- Overfit test on single sample ---")
+    history = model.fit(
+        single_train_provider,
+        validation_data=single_val_provider,
+        epochs=100,
+        steps_per_epoch=1,
+        validation_steps=1,
+        callbacks=callbacks
+    ) 
     
+
+
     #print("\nSample Validation:")
     #for i in range(3):
         #img = cv2.imread(train_dataset[i][0])
@@ -388,6 +434,7 @@ def main():
 
     print("\nTraining completed successfully!")
 
+
     print(history.history.keys())
 
 
@@ -419,7 +466,7 @@ def main():
     true_texts = labels_to_texts(labels, config.vocab, label_padding_token=label_padding_token)
 
 
-    visualize_predictions(images, true_texts, pred_texts, num=2)
+    visualize_predictions(images, true_texts, pred_texts, num=1)
     plot_sample(images[0], true_texts[0], pred_texts[0])
 
     softmax_probs = tf.nn.softmax(predictions[0], axis=-1).numpy()
@@ -464,7 +511,12 @@ def main():
     your_image_path = "../Datasets/image.png"  # change this path to your actual image path
     predict_single_image(model, your_image_path, config.vocab)
 
+    predictions = model.predict(images)
+    pred_classes = np.argmax(predictions[0], axis=-1)
+    print("Predicted class indices:", pred_classes)
+    print("Decoded prediction:", ctc_beam_search_decode(predictions[0], config.vocab))
 
+    print("Image min/max:", np.min(images), np.max(images), "dtype:", images.dtype)
 
 if __name__ == "__main__":
     main()
