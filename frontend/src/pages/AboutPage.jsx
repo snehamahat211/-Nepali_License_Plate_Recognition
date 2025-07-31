@@ -107,7 +107,7 @@ which largely overlooks non-English scripts and are not optimized for Nepal., ma
           <h2>Our Team</h2>
           <div className="team-content">
             <div className="team-photo">
-              <img src={teamPhoto} alt="Team 200_OK working on the project" style={{ width: "68%" }}/>
+              <img src={teamPhoto} alt="Team 200_OK working on the project" />
             </div>
             <div className="team-description">
               <p>
