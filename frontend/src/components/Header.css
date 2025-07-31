@@ -14,13 +14,13 @@
 .logo {
     font-size: 30px;
     font-weight: bold;
-    margin-bottom: 19px;
+    margin-bottom: 8px;
     color: #ffffff;
     margin-top: 15px;
 }
 
 .img{
-    margin-bottom: 19px;
+    margin-bottom: 8px;
     border-radius: 9px;
 }
 
@@ -50,7 +50,7 @@
 .nav-links {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 38px;
 }
 
@@ -76,7 +76,7 @@
 
 .footer {
 
-    padding-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid #333;
     font-size: 16px;
     color: #999;
@@ -84,7 +84,7 @@
 }
 
 .copyright {
-    margin-top: 0px;
+    margin-top: 8px;
 }
 
 .institution {
