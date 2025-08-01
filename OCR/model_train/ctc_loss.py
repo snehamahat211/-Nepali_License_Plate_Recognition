@@ -1,9 +1,8 @@
-
 import tensorflow as tf
 
 class CTCloss(tf.keras.losses.Loss):
-    def __init__(self, blank_index=-1, name='CTCLoss'):
-        super().__init__(name=name)
+    def __init__(self, blank_index=-1, reduction=tf.keras.losses.Reduction.AUTO, name='CTCLoss'):
+        super().__init__(reduction=reduction, name=name)
         self.blank_index = blank_index
 
     def call(self, y_true, y_pred):
@@ -31,5 +30,7 @@ class CTCloss(tf.keras.losses.Loss):
 
     def get_config(self):
         config = super().get_config()
-        config.update({"blank_index": self.blank_index})
+        config.update({
+            "blank_index": self.blank_index
+        })
         return config

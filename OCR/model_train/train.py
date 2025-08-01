@@ -8,6 +8,7 @@ import seaborn as sns
 import cv2
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
  
  #cpu
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -27,7 +28,7 @@ K.clear_session()
 
 
 from model_train.ctc_loss import CTCloss
-from inferencemodel import demo_random_val_sample
+from inferencemodel import demo_random_val_sample, predict_single_image
 from model_train.grayscalereader import GrayscaleImageReader
 from model_train.model import train_model
 from metrics.conf_matrix import ConfMatrixCallback
@@ -506,17 +507,9 @@ def main():
             print(f"Image is completely black: {path}")
 
 
-        # After training completes in main()
-    print("\nStarting prediction on your own image...")
-    your_image_path = "../Datasets/image.png"  # change this path to your actual image path
-    predict_single_image(model, your_image_path, config.vocab)
-
-    predictions = model.predict(images)
-    pred_classes = np.argmax(predictions[0], axis=-1)
-    print("Predicted class indices:", pred_classes)
-    print("Decoded prediction:", ctc_beam_search_decode(predictions[0], config.vocab))
-
-    print("Image min/max:", np.min(images), np.max(images), "dtype:", images.dtype)
+    print("\n Predicting your own image...")
+    your_image_path = "../Datasets/image.png"  # change as needed
+    predict_single_image(model, your_image_path, config.vocab, width=config.width, height=config.height)
 
 if __name__ == "__main__":
     main()
