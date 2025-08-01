@@ -31,10 +31,23 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
      - **CNN Layers**: Extract spatial features.
      - **LSTM Layers**: Handle character sequences.
      - **CTC Loss**: Aligns predictions with variable-length labels.
-
-## Dataset
+       
+3.  **Dataset**:
 - **YOLOv8 Training**: 6,000 annotated images (buses, cars, bikes) split into train/val/test sets.
 - **OCR Training**: 580 high-quality Nepali license plate images with Devanagari labels.
+
+4. **System Integration**:
+   - **Backend API** (FastAPI):
+     - Single `/recognize` endpoint
+     - Accepts image uploads
+     - Returns JSON with detected text
+   - **Frontend** (React):
+     - Simple file upload form
+     - Displays recognition results
+     - Shows original image with bounding boxes
+   - **Communication**:
+     - HTTP POST requests
+     - FormData for image transfer
 
 # Installation
 
@@ -62,7 +75,7 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
    --model weights/best_model.pt \
    --image cropped_plate.jpg \
    --device cpu  # or 'cuda' for GPU
-
+## Images
 ## Tools & Technologies
 | Category       | Tools/Libraries                          |
 |----------------|------------------------------------------|
@@ -70,8 +83,6 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
 | **Backend**    | FastAPI, Python                          |
 | **ML Models**  | YOLOv8, PyTorch (CRNN), TensorFlow      |
 | **Processing** | OpenCV, Albumentations (augmentation)    |
-
-## Images
 
 ## Conclusion
 
