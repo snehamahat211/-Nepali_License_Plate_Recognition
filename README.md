@@ -69,9 +69,9 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
 
 4. OCR Setup
    ```bash
-   cd ocr
+   cd OCR
    pip install -r requirements.txt
-   python predict.py \
+   python -m model_train.predict \
    --model weights/best_model.pt \
    --image cropped_plate.jpg \
    --device cpu  # or 'cuda' for GPU
