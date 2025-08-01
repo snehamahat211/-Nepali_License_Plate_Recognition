@@ -76,7 +76,7 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
    --image cropped_plate.jpg \
    --device cpu  # or 'cuda' for GPU
 ## Images
-![Input Image]([https://raw.githubusercontent.com/im-sonu-giri/-Nepali_License_Plate_Recognition/main/appendix1.jpg](https://github.com/im-sonu-giri/-Nepali_License_Plate_Recognition/blob/main/appendix1.jpg?raw=true))
+![Sample Input](https://github.com/im-sonu-giri/-Nepali_License_Plate_Recognition/blob/main/appendix1.jpg)
 
 ## Tools & Technologies
 | Category       | Tools/Libraries                          |
