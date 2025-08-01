@@ -38,7 +38,7 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
 
 4. **System Integration**:
    - **Backend API** (FastAPI):
-     - Single `/recognize` endpoint
+     - Single `/detect` endpoint
      - Accepts image uploads
      - Returns JSON with detected text
    - **Frontend** (React):
