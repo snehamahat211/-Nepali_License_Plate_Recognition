@@ -8,7 +8,7 @@ from mltu.tensorflow.metrics import CWERMetric
 
 CONFIG_PATH = "model_train/models/OCR/nepali_lpr_20250731_192208/configs.yaml"
 MODEL_PATH = "model_train/models/OCR/nepali_lpr_20250731_192208/model.h5"
-IMAGE_PATH = "./Datasets/img.png"
+IMAGE_PATH = "./Datasets/test.jpg"
 
 print("Config exists?", os.path.exists(CONFIG_PATH))
 print("Model exists?", os.path.exists(MODEL_PATH))
