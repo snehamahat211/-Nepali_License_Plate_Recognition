@@ -6,8 +6,8 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
 ## Objectives
 1. **Vehicle Detection**: Detect vehicles from input images/videos using YOLOv8.
 2. **License Plate Extraction**: Accurately localize and crop license plate regions.
-3. **OCR for Nepali Script**: Recognize Devanagari characters using a CRNN model with CTC loss.
-4. **System Integration**: Deploy an end-to-end pipeline with a user-friendly interface.
+3. **OCR for Nepali Script**: Recognize Devanagari characters.
+4. **System Integration**: End-to-end pipeline with a user-friendly interface.
 
 ## Key Features
 - **YOLOv8-Based Detection**: Real-time vehicle and license plate detection.
@@ -27,25 +27,15 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
      - **LSTM Layers**: Handle character sequences.
      - **CTC Loss**: Aligns predictions with variable-length labels.
 
-### Dataset
+## Dataset
 - **YOLOv8 Training**: 6,000 annotated images (buses, cars, bikes) split into train/val/test sets.
 - **OCR Training**: 580 high-quality Nepali license plate images with Devanagari labels.
-
-
-## Tools & Technologies
-| Category       | Tools/Libraries                          |
-|----------------|------------------------------------------|
-| **Frontend**   | React.js                                 |
-| **Backend**    | FastAPI, Python                          |
-| **ML Models**  | YOLOv8, PyTorch (CRNN), TensorFlow      |
-| **Processing** | OpenCV, Albumentations (augmentation)    |
-| **Deployment** | Docker                                   |
 
 # Installation
 
 1. Clone the repository:
    ```bash
-    git clone https://github.com/your-repo/nlpr-system.git
+    https://github.com/im-sonu-giri/-Nepali_License_Plate_Recognition.git
     cd nlpr-system
 
 2. Backend Setup 
@@ -58,4 +48,30 @@ Automatic Nepali License Plate Recognition (NLPR) is a system capable of extract
    ```bash  
     cd frontend
     npm install
-    npm run dev 
+
+4. OCR Setup
+   ```bash
+   cd ocr
+   pip install -r requirements.txt
+   python predict.py \
+   --model weights/best_model.pt \
+   --image cropped_plate.jpg \
+   --device cpu  # or 'cuda' for GPU
+
+## Tools & Technologies
+| Category       | Tools/Libraries                          |
+|----------------|------------------------------------------|
+| **Frontend**   | React.js                                 |
+| **Backend**    | FastAPI, Python                          |
+| **ML Models**  | YOLOv8, PyTorch (CRNN), TensorFlow      |
+| **Processing** | OpenCV, Albumentations (augmentation)    |
+
+## Images
+
+## Conclusion
+
+This project’s primary goal is to develop a system that can swiftly and precisely read Nepali
+car license plates automatically and translate it into our native script. To ensure that it functions properly with the Devanagari script we will be using deep learning and OCR. To keep
+things quick and easy, the system is made to process one image at a time and handle clean,
+high-quality images. Because of this, it works well in practical applications like parking
+systems and traffic monitoring.
