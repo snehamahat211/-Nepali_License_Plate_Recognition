@@ -91,3 +91,6 @@ car license plates automatically and translate it into our native script. To ens
 things quick and easy, the system is made to process one image at a time and handle clean,
 high-quality images. Because of this, it works well in practical applications like parking
 systems and traffic monitoring.
+
+## Author
+*© 2025 Team 200_OK |6th Semester |Nepal College of Information Technology (NCIT)*  
