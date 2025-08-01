@@ -1,4 +1,9 @@
 # Nepali License Plate Recognition System (NLPR)
+# Team Members
+- **Astha Thapa** (221707)   
+- **Sneha Mahat** (221742)   
+- **Sonu Giri** (221743)  
+- **Lamin Tamang** (221720) 
 
 ## Introduction
 Automatic Nepali License Plate Recognition (NLPR) is a system capable of extracting license plate characters written in the Nepali Devanagari script. This project addresses the gap in existing recognition systems that primarily support Latin characters, making it challenging for traffic monitoring and vehicle identification in Nepal. Our solution combines YOLOv8 for license plate detection with a custom OCR engine using CRNN (CNN + LSTM) for Nepali character recognition.
