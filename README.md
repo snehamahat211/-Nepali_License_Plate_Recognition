@@ -97,4 +97,4 @@ high-quality images. Because of this, it works well in practical applications li
 systems and traffic monitoring.
 
 ## Author
-*© 2025 Team 200_OK |6th Semester |Nepal College of Information Technology (NCIT)*  
+*© 2025 (Team 200_OK) |6th Semester |Nepal College of Information Technology (NCIT)*  
